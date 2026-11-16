@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyector Biblia e Himnario OBS</title>
+<meta name="description" content="Panel gratuito para OBS Studio que muestra versículos de la Biblia y letras de himnos en transmisiones y proyectores de iglesias.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Merriweather:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fondo: #0f1320;
+    --fondo2: #171c2c;
+    --tarjeta: #1d2336;
+    --borde: #2c3450;
+    --texto: #e9ebf3;
+    --tenue: #a3a9bf;
+    --acento: #d4a843;
+    --azul: #3b82f6;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --fondo: #f7f5ef;
+      --fondo2: #efece3;
+      --tarjeta: #ffffff;
+      --borde: #e2ddcf;
+      --texto: #1c2030;
+      --tenue: #5b6175;
+      --acento: #a8801f;
+      --azul: #2563eb;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font: 16px/1.6 "Montserrat", "Segoe UI", system-ui, sans-serif;
+  }
+  a { color: var(--azul); }
+  .contenedor { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+  header.portada {
+    padding: 72px 0 56px;
+    background:
+      radial-gradient(1200px 400px at 80% -10%, rgba(212, 168, 67, 0.18), transparent 60%),
+      var(--fondo2);
+    border-bottom: 1px solid var(--borde);
+  }
+  .etiqueta { display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--acento); }
+  h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.1; margin: 10px 0 16px; font-weight: 800; }
+  .lema { font-size: 19px; color: var(--tenue); max-width: 640px; margin: 0 0 28px; }
+  .botones { display: flex; flex-wrap: wrap; gap: 12px; }
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid var(--borde);
+    color: var(--texto);
+    background: var(--tarjeta);
+  }
+  .boton.principal { background: var(--acento); border-color: var(--acento); color: #1a1408; }
+  .boton:hover { filter: brightness(1.08); }
+
+  /* Vista previa (maqueta del tercio inferior) */
+  .muestra {
+    margin-top: 44px;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--borde);
+    background: linear-gradient(135deg, #2b3a55, #11182a 60%, #3a2a1a);
+  }
+  .muestra .barra {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: 7%;
+    padding: 2.2% 3%;
+    background: rgba(10, 14, 24, 0.88);
+    border-left: 6px solid #d4a843;
+    border-radius: 6px;
+    color: #fff;
+  }
+  .muestra .ref { font-size: clamp(10px, 1.6vw, 15px); font-weight: 700; color: #d4a843; letter-spacing: 0.06em; }
+  .muestra .vers { font-size: clamp(13px, 2.3vw, 24px); font-weight: 500; }
+
+  section { padding: 56px 0; border-bottom: 1px solid var(--borde); }
+  h2 { font-size: 28px; margin: 0 0 8px; }
+  .sub { color: var(--tenue); margin: 0 0 28px; }
+  .rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+  .tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 20px; }
+  .tarjeta h3 { margin: 0 0 6px; font-size: 17px; }
+  .tarjeta p { margin: 0; color: var(--tenue); font-size: 15px; }
+  .icono { font-size: 26px; margin-bottom: 6px; }
+
+  ol.pasos { counter-reset: paso; list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  ol.pasos li {
+    counter-increment: paso;
+    position: relative;
+    padding: 16px 18px 16px 64px;
+    background: var(--tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+  }
+  ol.pasos li::before {
+    content: counter(paso);
+    position: absolute;
+    left: 18px;
+    top: 14px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--acento);
+    color: #1a1408;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+  }
+  ol.pasos b { display: block; }
+  ol.pasos span { color: var(--tenue); font-size: 15px; }
+  code {
+    font-family: Consolas, "Cascadia Mono", monospace;
+    font-size: 0.92em;
+    background: var(--fondo2);
+    border: 1px solid var(--borde);
+    border-radius: 4px;
+    padding: 1px 5px;
+    overflow-wrap: anywhere;
+  }
+  .nota {
+    margin-top: 24px;
+    padding: 16px 18px;
+    border-left: 4px solid var(--acento);
+    background: var(--tarjeta);
+    border-radius: 0 8px 8px 0;
+    color: var(--tenue);
+  }
+  .demo { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; align-items: start; }
+  footer { padding: 32px 0 48px; color: var(--tenue); font-size: 14px; }
+</style>
+</head>
+<body>
+  <header class="portada">
+    <div class="contenedor">
+      <span class="etiqueta">Gratis · Código abierto · Para iglesias</span>
+      <h1>Biblia e himnario en tus transmisiones con OBS</h1>
+      <p class="lema">Un panel dentro de OBS Studio para mostrar versículos y letras de himnos con diseños propios, en la transmisión o en el proyector del templo.</p>
+      <div class="botones">
+        <a class="boton principal" id="descargar" href="#">⬇ Descargar ZIP</a>
+        <a class="boton" href="#demo">▶ Probar la demo</a>
+        <a class="boton" id="repo" href="#">Ver en GitHub</a>
+      </div>
+      <div class="muestra" aria-label="Ejemplo de versículo en tercio inferior">
+        <div class="barra">
+          <div class="ref">JUAN 3:16</div>
+          <div class="vers">Aquí aparece el versículo, sobre la imagen de tu cámara.</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="contenedor">
+      <h2>Qué hace</h2>
+      <p class="sub">Todo lo necesario para el culto, sin pagar por plantillas.</p>
+      <div class="rejilla">
+        <div class="tarjeta"><div class="icono">📖</div><h3>Biblia</h3><p>Escribe "jn 3 16" y listo. Catálogo de libros, rangos de versículos y citas recientes.</p></div>
+        <div class="tarjeta"><div class="icono">🎵</div><h3>Himnario</h3><p>Busca por número o título. Estrofas en orden y coro repetido automáticamente.</p></div>
+        <div class="tarjeta"><div class="icono">📋</div><h3>Lista del culto</h3><p>Prepara antes del servicio todas las citas e himnos, en orden.</p></div>
+        <div class="tarjeta"><div class="icono">🎨</div><h3>Diseños propios</h3><p>Tercio inferior, pantalla completa, texto junto a cámaras o solo texto. Colores, letras, fondos y animaciones.</p></div>
+        <div class="tarjeta"><div class="icono">📺</div><h3>Dos salidas</h3><p>Un versículo en las cámaras y un himno en otra escena, cada uno con su propio diseño.</p></div>
+        <div class="tarjeta"><div class="icono">⌨️</div><h3>Con el teclado</h3><p>Flechas para avanzar, Esc para ocultar. Ideal para el operador.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="contenedor">
+      <h2>Pruébalo sin instalar</h2>
+      <p class="sub">La demostración funciona en el navegador, sin OBS, con textos de ejemplo.</p>
+      <div class="demo">
+        <ol class="pasos">
+          <li><b>Abre la salida</b><span>Es lo que se vería en la transmisión. Déjala abierta en su pestaña.</span></li>
+          <li><b>Abre el panel</b><span>Escribe una cita (por ejemplo <code>jn 3 16</code>), Enter, y presiona → . Prueba también Himnos y Diseño.</span></li>
+          <li><b>Mira la salida</b><span>Regresa a la pestaña de la salida para ver el resultado.</span></li>
+        </ol>
+        <div class="botones">
+          <a class="boton principal" href="salida.html?demo" target="_blank" rel="noopener">1 · Abrir la salida</a>
+          <a class="boton" href="panel.html?demo" target="_blank" rel="noopener">2 · Abrir el panel</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="instalar">
+    <div class="contenedor">
+      <h2>Instalación en 5 pasos</h2>
+      <p class="sub">El instructivo completo, con ejemplos para cada tipo de equipo, está en el <a id="readme" href="#">README</a>.</p>
+      <ol class="pasos">
+        <li><b>Descarga y descomprime</b><span>En una carpeta fija, por ejemplo <code>C:\proyector-biblia-himnario-obs</code>.</span></li>
+        <li><b>Activa el WebSocket de OBS</b><span>Herramientas → Ajustes del servidor WebSocket. Copia <code>config.ejemplo.js</code> como <code>config.js</code> y pon ahí la contraseña.</span></li>
+        <li><b>Agrega tu Biblia y tu himnario</b><span>En <code>datos/biblia.js</code> y <code>datos/himnario.js</code>. Puedes usar el <a href="#datos">paquete de datos listo</a> (RVR1960 + Himnario Evangélico Presbiteriano). Si usabas el OBS Bible Plugin, su archivo de Biblia funciona tal cual.</span></li>
+        <li><b>Agrega el panel</b><span>Docks → Docks de navegador personalizados → URL <code>file:///C:/proyector-biblia-himnario-obs/panel.html</code></span></li>
+        <li><b>Agrega las salidas</b><span>En cada escena: + → Navegador → Archivo local → <code>salida-biblia.html</code> o <code>salida-himnos.html</code>, 1920×1080.</span></li>
+      </ol>
+      <div class="nota">
+        El código del proyecto <b>no incluye textos bíblicos ni himnarios</b>.
+        Descárgalos aparte del <a href="#datos">paquete de datos</a> o agrega los archivos que tu iglesia ya usa.
+      </div>
+    </div>
+  </section>
+
+  <section id="datos">
+    <div class="contenedor">
+      <h2>Paquete de datos listo para usar</h2>
+      <p class="sub">La Biblia y el himnario en el formato del proyecto, para no tener que prepararlos.</p>
+      <div class="rejilla">
+        <div class="tarjeta"><div class="icono">📖</div><h3>Biblia Reina-Valera 1960</h3><p>Los 66 libros, revisada y corregida. Archivo <code>biblia.js</code>.</p></div>
+        <div class="tarjeta"><div class="icono">🎵</div><h3>Himnario Evangélico Presbiteriano</h3><p>706 himnos con estrofas, coros, autores y citas. Archivo <code>himnario.js</code>.</p></div>
+      </div>
+      <ol class="pasos" style="margin-top: 20px">
+        <li><b>Descarga el ZIP</b><span>Desde Google Drive, con el botón de abajo (ícono de descarga arriba a la derecha).</span></li>
+        <li><b>Copia los archivos</b><span>Descomprime y copia <code>biblia.js</code> y <code>himnario.js</code> a la carpeta <code>datos</code> del proyecto.</span></li>
+        <li><b>Pon la versión en config.js</b><span><code>biblia: { abreviatura: "RVR1960" },</code> y recarga el panel en OBS.</span></li>
+      </ol>
+      <div class="botones" style="margin-top: 20px">
+        <a class="boton principal" href="https://drive.google.com/file/d/1B8zye0bMZzDGIugql1sGbryPEalL_0mN/view?usp=sharing" target="_blank" rel="noopener">⬇ Descargar datos (ZIP, 3 MB)</a>
+      </div>
+      <div class="nota">
+        Los textos conservan los derechos de sus titulares (la Reina-Valera 1960 es de las Sociedades Bíblicas Unidas;
+        los himnos, de sus autores). Úsalos en el culto y en las transmisiones de tu iglesia.
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="contenedor">
+      Código bajo licencia MIT. Hecho con cariño para las iglesias que transmiten sus cultos.
+    </div>
+  </footer>
+
+<script>
+  // Enlaces al repositorio calculados desde la dirección de GitHub Pages
+  // (https://USUARIO.github.io/REPOSITORIO/).
+  (function () {
+    const host = location.hostname;
+    const partes = location.pathname.split("/").filter(Boolean);
+    if (host.endsWith(".github.io")) {
+      const usuario = host.replace(".github.io", "");
+      const repo = partes[0] || (usuario + ".github.io");
+      const base = "https://github.com/" + usuario + "/" + repo;
+      document.getElementById("repo").href = base;
+      document.getElementById("readme").href = base + "#readme";
+      document.getElementById("descargar").href = base + "/archive/refs/heads/main.zip";
+    } else {
+      document.getElementById("repo").href = "README.md";
+      document.getElementById("readme").href = "README.md";
+      document.getElementById("descargar").href = "README.md#2-descargar";
+    }
+  })();
+</script>
+</body>
+</html>

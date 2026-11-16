@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Proyector · Salida Himnos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@500;700&family=Lato:wght@400;700&family=Open+Sans:wght@400;700&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="salida.css">
+</head>
+<body>
+  <div id="escena" class="escena p-tercio">
+    <div class="fondo"></div>
+    <div class="caja">
+      <div class="cabecera"></div>
+      <div class="texto"></div>
+    </div>
+  </div>
+<!-- Solo muestra los Himnos. -->
+<script>window.CANAL_SALIDA = "himnos";</script>
+<script src="lib/cargar.js"></script>
+<script>cargarScripts([["config.js", "config.ejemplo.js"], "lib/obsws.js", "salida.js"]);</script>
+</body>
+</html>

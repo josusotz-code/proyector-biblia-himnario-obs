@@ -1,0 +1,129 @@
+:root {
+  --acento: #d4a843;
+  --color-texto: #ffffff;
+  --fuente: "Montserrat", "Segoe UI", sans-serif;
+  --peso: 500;
+  --escala: 1;
+  --alinear: center;
+  --vpos: center;
+  --opacidad-fondo: 0.55;
+  --caja: rgba(10, 14, 24, 0.88);
+  --sombra: 0 3px 14px rgba(0, 0, 0, 0.6);
+}
+html, body {
+  margin: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: transparent;
+}
+body.vista-previa { background: #3a3f47 url("../Plantilla Final Transmisiones.png") center/cover; }
+
+.escena {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+.escena.visible { opacity: 1; }
+.escena.anim-ninguna { transition: none; }
+.escena .caja { transition: transform 0.45s ease; }
+.escena.anim-deslizar:not(.visible) .caja { transform: translateY(40px); }
+.escena.anim-zoom:not(.visible) .caja { transform: scale(0.94); }
+
+.caja { font-family: var(--fuente); color: var(--color-texto); text-align: var(--alinear); text-shadow: var(--sombra); }
+.cabecera { font-weight: 700; color: var(--acento); letter-spacing: 0.04em; text-transform: uppercase; }
+.sin-cabecera .cabecera { display: none !important; }
+.texto { font-weight: var(--peso); overflow: hidden; }
+.texto p { margin: 0; }
+.texto .linea { display: block; }
+.texto sup { font-size: 0.55em; color: var(--acento); margin-right: 0.2em; font-weight: 700; }
+.cita { font-style: italic; opacity: 0.9; font-size: 0.5em; margin-top: 0.7em; line-height: 1.35; font-weight: 400; }
+.pie { opacity: 0.75; font-size: 0.4em; margin-top: 0.6em; letter-spacing: 0.03em; font-weight: 400; }
+
+/* Fondo (pantalla completa y texto + cámaras) */
+.fondo { display: none; }
+.p-completa .fondo, .p-lateral .fondo {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background-color: #0b1220;
+  background-size: cover;
+  background-position: center;
+}
+.p-completa .fondo::after, .p-lateral .fondo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--opacidad-fondo));
+}
+/* Con color sólido se muestra el color exacto, sin oscurecer. */
+.solido .fondo::after { display: none; }
+
+/* ---------- Plantilla: tercio inferior ---------- */
+.p-tercio .caja {
+  position: absolute;
+  left: 160px;
+  right: 160px;
+  bottom: 70px;
+  max-height: 400px;
+  padding: 26px 40px 30px 48px;
+  background: var(--caja);
+  border-left: 8px solid var(--acento);
+  border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.p-tercio.vpos-arriba .caja { bottom: auto; top: 70px; }
+.p-tercio .cabecera { font-size: 30px; margin-bottom: 10px; }
+.p-tercio .texto { font-size: calc(46px * var(--escala)); line-height: 1.3; }
+
+/* ---------- Plantilla: pantalla completa ---------- */
+.p-completa .caja {
+  position: absolute;
+  left: 150px;
+  right: 150px;
+  top: 110px;
+  bottom: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: var(--vpos);
+}
+.p-completa .cabecera { font-size: 40px; margin-bottom: 30px; }
+.p-completa .texto { font-size: calc(78px * var(--escala)); line-height: 1.35; }
+
+/* ---------- Plantilla: texto + cámaras (escena Himnos) ----------
+   El texto ocupa un lado; el otro (unos 600 px) queda libre para las dos
+   cámaras, que van ENCIMA de esta fuente en OBS. */
+.p-lateral .caja {
+  position: absolute;
+  left: 70px;
+  width: 1150px;
+  top: 70px;
+  bottom: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: var(--vpos);
+}
+.p-lateral.lado-der .caja { left: auto; right: 70px; }
+.p-lateral .cabecera { font-size: 36px; margin-bottom: 26px; }
+.p-lateral .texto { font-size: calc(68px * var(--escala)); line-height: 1.35; }
+
+/* ---------- Plantilla: solo texto (sin fondo, sobre la cámara) ---------- */
+.p-limpia .caja {
+  position: absolute;
+  left: 140px;
+  right: 140px;
+  top: 90px;
+  bottom: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: var(--vpos);
+  text-shadow: 0 2px 4px #000, 0 0 18px rgba(0, 0, 0, 0.9);
+}
+.p-limpia .cabecera { font-size: 32px; margin-bottom: 12px; }
+.p-limpia .texto { font-size: calc(54px * var(--escala)); line-height: 1.3; }
+.p-limpia .texto { max-height: 420px; }

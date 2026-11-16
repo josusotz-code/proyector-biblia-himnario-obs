@@ -1,0 +1,10 @@
+# Configuración personal (contraseña de OBS)
+config.js
+
+# Datos con derechos de autor: cada iglesia agrega los suyos
+datos/*.js
+datos/*.respaldo
+
+# Imágenes de fondo de cada iglesia
+fondos/*
+!fondos/LEEME.md

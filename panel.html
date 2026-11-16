@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyector · Panel</title>
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <header class="barra">
+    <span id="estado" class="estado" title="Conexión con OBS"></span>
+    <div class="aires">
+      <div class="fila-aire">
+        <span class="canal">Biblia</span>
+        <div id="aireBiblia" class="al-aire">Nada al aire</div>
+        <button id="ocultarBiblia" class="btn btn-rojo apagado" title="Ocultar Biblia (Esc en la pestaña Biblia)">Ocultar</button>
+      </div>
+      <div class="fila-aire">
+        <span class="canal">Himnos</span>
+        <div id="aireHimnos" class="al-aire">Nada al aire</div>
+        <button id="ocultarHimnos" class="btn btn-rojo apagado" title="Ocultar Himnos (Esc en la pestaña Himnos)">Ocultar</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="pestanas">
+    <button data-pestana="biblia" class="activa">Biblia</button>
+    <button data-pestana="himnos">Himnos</button>
+    <button data-pestana="culto">Culto <span id="cuentaCulto" class="cuenta"></span></button>
+    <button data-pestana="diseno">Diseño</button>
+  </nav>
+  <div id="avisoDatos" class="aviso-datos" hidden></div>
+
+  <!-- ===================== BIBLIA ===================== -->
+  <section id="p-biblia" class="panel activo">
+    <form id="formCita" class="fila">
+      <input id="cita" type="text" placeholder="Ej. Juan 3:16 · sal 23 · 1 co 13:4-7" autocomplete="off">
+      <button class="btn btn-primario" type="submit" title="Ir a la cita (no la pone al aire)">Ir</button>
+      <button id="btnLibros" class="btn" type="button" title="Catálogo de libros">Libros</button>
+      <button id="guardarCita" class="btn" type="button" title="Guardar esta cita en la lista del culto">+ Culto</button>
+    </form>
+    <div id="errorCita" class="aviso"></div>
+    <div id="recientes" class="chips"></div>
+
+    <div id="catalogo" class="catalogo" hidden>
+      <div class="fila">
+        <button id="catVolver" class="btn" type="button" hidden>◀ Libros</button>
+        <div id="catTitulo" class="titulo-cap">Elige un libro</div>
+        <button id="catCerrar" class="btn" type="button" title="Cerrar catálogo">✕</button>
+      </div>
+      <div id="catLibros"></div>
+      <div id="catCapitulos" class="cat-numeros" hidden></div>
+    </div>
+
+    <div class="fila nav-cap">
+      <button id="capAnt" class="btn" title="Capítulo anterior">◀</button>
+      <div id="tituloCap" class="titulo-cap">Escribe una cita</div>
+      <button id="capSig" class="btn" title="Capítulo siguiente">▶</button>
+    </div>
+    <ol id="versiculos" class="lista"></ol>
+
+    <div class="fila controles">
+      <button id="vAnt" class="btn">◀ Anterior</button>
+      <button id="vSig" class="btn btn-primario">Siguiente ▶</button>
+    </div>
+  </section>
+
+  <!-- ===================== HIMNOS ===================== -->
+  <section id="p-himnos" class="panel">
+    <div class="fila">
+      <input id="buscaHimno" type="text" placeholder="Número o título del himno" autocomplete="off">
+    </div>
+    <div id="bloques" class="bloques"></div>
+    <ol id="resultados" class="lista resultados"></ol>
+
+    <div id="himnoSel" class="himno-sel" hidden>
+      <div class="fila">
+        <button id="volverHimnos" class="btn" title="Volver a la lista">◀</button>
+        <div id="tituloHimno" class="titulo-cap"></div>
+        <button id="guardarHimno" class="btn" type="button" title="Guardar este himno en la lista del culto">+ Culto</button>
+      </div>
+      <div class="opciones">
+        <label><input id="optTitulo" type="checkbox" checked> Título primero</label>
+        <label><input id="optAutores" type="checkbox" checked> Autores y cita</label>
+        <label><input id="optCoro" type="checkbox" checked> Repetir coro</label>
+        <label>Líneas
+          <select id="optLineas">
+            <option value="0">Todas</option>
+            <option value="2">2</option>
+            <option value="4" selected>4</option>
+            <option value="6">6</option>
+          </select>
+        </label>
+      </div>
+      <ol id="diapos" class="lista diapos"></ol>
+      <div class="fila controles">
+        <button id="hAnt" class="btn">◀ Anterior</button>
+        <button id="hSig" class="btn btn-primario">Siguiente ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CULTO (lista guardada) ===================== -->
+  <section id="p-culto" class="panel">
+    <p class="nota">Guarda aquí las citas y los himnos del culto con el botón <b>+ Culto</b>.
+      Clic en un elemento para abrirlo; ▶ lo pone al aire directo.</p>
+    <ol id="listaCulto" class="lista culto"></ol>
+    <div id="cultoVacio" class="nota vacio">La lista está vacía.</div>
+    <div class="fila">
+      <button id="vaciarCulto" class="btn" type="button">Vaciar lista</button>
+    </div>
+  </section>
+
+  <!-- ===================== DISEÑO ===================== -->
+  <section id="p-diseno" class="panel">
+    <div class="plantillas grupo-estilo">
+      <label><input type="radio" name="grupoEstilo" value="biblia"><span>Diseño de Biblia</span></label>
+      <label><input type="radio" name="grupoEstilo" value="himnos"><span>Diseño de Himnos</span></label>
+    </div>
+    <p class="nota">Cada uno guarda su propio diseño. Lo que cambies aquí se aplica solo a <b id="grupoNombre">la Biblia</b>.</p>
+
+    <h3>Plantilla</h3>
+    <div class="plantillas">
+      <label><input type="radio" name="plantilla" value="tercio"><span>Tercio inferior</span></label>
+      <label><input type="radio" name="plantilla" value="completa"><span>Pantalla completa</span></label>
+      <label><input type="radio" name="plantilla" value="lateral"><span>Texto + cámaras</span></label>
+      <label><input type="radio" name="plantilla" value="limpia"><span>Solo texto</span></label>
+    </div>
+
+    <h3>Fondo <small>(pantalla completa y texto + cámaras)</small></h3>
+    <div id="fondos" class="fondos"></div>
+    <label class="rango">Color sólido <input id="colorFondo" type="color"></label>
+    <label class="rango">Oscurecer fondo <input id="oscurecer" type="range" min="0" max="0.9" step="0.05"></label>
+
+    <h3>Texto</h3>
+    <label class="rango">Letra
+      <select id="fuente">
+        <option>Montserrat</option>
+        <option>Lato</option>
+        <option>Open Sans</option>
+        <option>Oswald</option>
+        <option>Merriweather</option>
+        <option>Playfair Display</option>
+        <option>Georgia</option>
+        <option>Segoe UI</option>
+      </select>
+    </label>
+    <label class="rango">Tamaño <input id="escala" type="range" min="0.6" max="1.4" step="0.05"></label>
+    <label class="rango">Color del texto <input id="colorTexto" type="color"></label>
+    <label class="rango">Color de acento <input id="acento" type="color"></label>
+    <label class="rango">Alineación
+      <select id="alinear">
+        <option value="left">Izquierda</option>
+        <option value="center">Centro</option>
+        <option value="right">Derecha</option>
+      </select>
+    </label>
+    <label class="rango">Posición
+      <select id="vpos">
+        <option value="arriba">Arriba</option>
+        <option value="center">Centro</option>
+        <option value="abajo">Abajo</option>
+      </select>
+    </label>
+    <label class="rango"><input id="negrita" type="checkbox"> Letra en negrita</label>
+    <label class="rango"><input id="sombra" type="checkbox"> Sombra en el texto</label>
+    <label class="rango"><input id="cabecera" type="checkbox"> Mostrar encabezado (cita / nombre del himno)</label>
+    <label class="rango solo-biblia"><input id="mostrarVersion" type="checkbox"> Mostrar <b id="textoVersion">la versión</b> junto a la cita</label>
+
+    <h3>Caja <small>(tercio inferior)</small></h3>
+    <label class="rango">Color de la caja <input id="colorCaja" type="color"></label>
+    <label class="rango">Opacidad <input id="opacidadCaja" type="range" min="0" max="1" step="0.05"></label>
+
+    <h3>Texto + cámaras</h3>
+    <label class="rango">Texto del lado
+      <select id="lado">
+        <option value="izq">Izquierdo (cámaras a la derecha)</option>
+        <option value="der">Derecho (cámaras a la izquierda)</option>
+      </select>
+    </label>
+
+    <h3>Animación</h3>
+    <label class="rango">Entrada
+      <select id="animacion">
+        <option value="desvanecer">Desvanecer</option>
+        <option value="deslizar">Deslizar hacia arriba</option>
+        <option value="zoom">Acercar</option>
+        <option value="ninguna">Ninguna (corte directo)</option>
+      </select>
+    </label>
+    <button id="restablecer" class="btn" type="button">Restablecer este diseño</button>
+
+    <h3>Conexión</h3>
+    <p id="estadoTexto" class="nota"></p>
+  </section>
+
+<script src="lib/cargar.js"></script>
+<script>
+  // Los archivos de la Biblia usan el formato del "OBS Bible Plugin" y se cargan con esta función.
+  window.ObsBiblePlugin = { importBible: (b) => { window.BIBLIA = b; }, setAllBiblesLoaded: () => {} };
+  // Tus archivos (config.js, datos/biblia.js, datos/himnario.js) o, si no existen, los de ejemplo.
+  cargarScripts([
+    ["config.js", "config.ejemplo.js"],
+    ["datos/biblia.js", "datos/ejemplo/biblia-ejemplo.js"],
+    ["datos/himnario.js", "datos/ejemplo/himnario-ejemplo.js"],
+    "lib/obsws.js",
+    "lib/biblia.js",
+    "panel.js"
+  ]);
+</script>
+</body>
+</html>
