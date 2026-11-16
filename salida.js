@@ -3,7 +3,19 @@ const elFondo = escena.querySelector(".fondo");
 const elCab = escena.querySelector(".cabecera");
 const elTexto = escena.querySelector(".texto");
 
-if (new URLSearchParams(location.search).has("previa")) document.body.classList.add("vista-previa");
+// En un navegador normal (?demo o ?previa) el fondo transparente se vería blanco y el
+// lienzo de 1920×1080 no cabría: se pone un fondo oscuro y se escala a la ventana.
+const params = new URLSearchParams(location.search);
+if (params.has("previa") || params.has("demo")) {
+  document.documentElement.classList.add("vista-previa");
+  document.body.classList.add("vista-previa");
+  const escalar = () => {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    document.body.style.transform = "translate(" + (innerWidth - 1920 * s) / 2 + "px," + (innerHeight - 1080 * s) / 2 + "px) scale(" + s + ")";
+  };
+  addEventListener("resize", escalar);
+  escalar();
+}
 
 const ESTILO_BASE = {
   plantilla: "tercio", fondo: "", colorFondo: "#0b1220", oscurecer: 0.55,

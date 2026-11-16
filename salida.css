@@ -17,7 +17,16 @@ html, body {
   overflow: hidden;
   background: transparent;
 }
-body.vista-previa { background: #3a3f47 url("../Plantilla Final Transmisiones.png") center/cover; }
+/* Vista previa en un navegador (?demo o ?previa): simula una cámara detrás y escala
+   el lienzo de 1920×1080 al tamaño de la ventana. */
+html.vista-previa { width: 100%; height: 100%; background: #000; }
+body.vista-previa {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  background: radial-gradient(ellipse at 30% 40%, #5a6b85, #2a3346 55%, #141a26);
+}
 
 .escena {
   position: absolute;
